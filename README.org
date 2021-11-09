@@ -1,0 +1,48 @@
+#+TITLE: LockMe
+#+AUTHOR: Luca Zaninotto - badadumTss
+* WIP
+Software very buggy, for now can only be launched from cli and stays
+there until it stops (manages to elude C-c, but not other types of
+signals).
+** TODO list
+- Start and detach
+- Better connfiguration
+- Better permission managment
+
+* How it works
+Like many other programs like this overrides ~/etc/hosts~ with the
+configurations generated starting from ~/etc/lockme/rules.yaml~. the
+configurations are in the shape of:
+#+BEGIN_SRC yaml
+  [rule_name]:
+    mode: [blacklist/whitelist]   # only blacklist supported at the moment
+    sites:
+      - domain.com
+      - domain2.com
+      - ...
+#+END_SRC
+
+* How to run it
+#+BEGIN_SRC sh
+  # compile with
+  cargo build
+  # run with
+  ./target/debug/lockme -t [TIME] -r [RULE]
+#+END_SRC
+
+* Debug/develop
+
+** Flags
+[[https://docs.rs/getopts/0.2.21/getopts/][getopts]] library, also generates the help page
+
+** Yaml
+[[https://docs.rs/yaml-rust/0.4.5/yaml_rust/][yaml-rust]], parses the configuration file in yaml_parse.rs
+
+** Progress bar
+[[https://docs.rs/indicatif/0.16.2/indicatif/][indicatif]], some customization but everything was in the first
+documentation page nothing fancy
+
+** Do not suspend
+[[https://docs.rs/ctrlc/3.2.1/ctrlc/][ctrlc]] created an handle that does not terminate, once called it simply
+prints /Nice try/ and returns.
+
