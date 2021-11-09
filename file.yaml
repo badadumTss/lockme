@@ -1,0 +1,13 @@
+nuke:
+  mode:
+    blacklist
+  sites:
+    - netflix
+    - youtube
+    - primevideo
+
+allow:
+  mode:
+    whitelist
+  sites:
+    - github
