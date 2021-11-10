@@ -60,12 +60,11 @@ fn main() -> Result<(), std::io::Error> {
                 let rule = &x[&Yaml::from_str(&rule_to_apply)];
                 let mode = yaml_parse::get_mode(rule);
                 let sites = yaml_parse::get_sites(rule);
-                let blacklist = configs::build_blacklist(sites);
 
                 let config = match mode.as_str().unwrap() {
-                    "blacklist" => (blacklist),
+                    "blacklist" => (configs::build_blacklist(sites)),
 
-                    "whitelist" => (String::from("whitelist")),
+                    "whitelist" => (configs::build_whitelist(sites)),
 
                     _ => panic!(
                         "Error reading configurations, unknown mode {}",
@@ -81,9 +80,6 @@ fn main() -> Result<(), std::io::Error> {
                             println!("\nHaha, nice try\n");
                         })
                         .expect("Error setting Ctrl-C handler");
-                        // start new child detached thread that after
-                        // time seconds copies the backup file back in
-                        // the orginal, deleting the old file.  let
                         let handler = thread::spawn(move || {
                             let bar = ProgressBar::new(time_left);
                             bar.set_style(
@@ -96,7 +92,6 @@ fn main() -> Result<(), std::io::Error> {
                                 thread::sleep(time::Duration::from_secs(1));
                             }
                             bar.finish();
-                            //
                             println!("{} seconds passed, restoring hosts", time_left);
                             configs::wipe_all();
                         });
@@ -104,21 +99,17 @@ fn main() -> Result<(), std::io::Error> {
                         return Ok(handler.join().unwrap());
                     }
 
-                    Err(e) => panic!(
-                        "Not able to write to /etc/hosts: {}
-Note that this program needs to be executed as root\n",
-                        e
-                    ),
+                    Err(e) => {
+                        println!("Not able to edit configurations. This program needs to be executed as root in order to block connections");
+                        return Err(e);
+                    }
                 };
             } else {
                 messages::print_rule_not_defined();
             }
         }
         None => {
-            println!(
-                "The file /etc/lockme/rules.yaml is empty,
-                define some rules to apply!"
-            )
+            println!("The file /etc/lockme/rules.yaml is empty, define some rules to apply!")
         }
     }
     return Ok(());

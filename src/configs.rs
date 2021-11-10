@@ -44,6 +44,15 @@ pub fn build_blacklist(sites: Yaml) -> String {
     return wrap(contents);
 }
 
+pub fn build_whitelist(sites: Yaml) -> String {
+    let mut contents = String::from("");
+    for site in sites {
+        contents += &("0.0.0.0\t".to_owned() + &(site.clone()).into_string().unwrap() + "\n");
+        contents += &("0.0.0.0\twww.".to_owned() + &(site.clone()).into_string().unwrap() + "\n");
+    }
+    return wrap(contents);
+}
+
 pub fn wrap(contents: String) -> String {
     let mut to_return = String::from("### lockme configs, DO NOT TOUCH ###\n\n");
     to_return += &contents;
